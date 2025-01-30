@@ -12,11 +12,13 @@ To understand this project and especially the Kubernetes setup, you need to have
 - Unix systems
 - Any programming language (Go in this case)
 
-## Project Structure
+## Projects Structures
 
-- `/manifests`: The Kubernetes manifests for the application including deployment, service, and ingress configurations
-- `/app`: The source code for the Go application
-- `/app/Dockerfile`: The Dockerfile for the Go application
+Inside every example, you will find the following structure:
+
+- `/<exampleApp>/manifests/`: The Kubernetes manifests for the applications including deployments, services, and ingresses configurations
+- `/<exampleApp>/app/.../`: The source code for the applications to deploy
+- `/<exampleApp>/app/.../Dockerfile`: Inside every app directory, you will find a Dockerfile to build the application image
 
 ## Table of Contents
 
