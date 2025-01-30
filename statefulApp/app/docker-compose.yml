@@ -1,0 +1,48 @@
+# Docker Compose file for the stateful application for development purposes
+
+services:
+  client:
+    build:
+      context: client/
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+
+  api:
+    build:
+      context: api/
+      dockerfile: Dockerfile
+    environment:
+      nodename: "docker"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_URL: "postgres"
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: "postgres"
+      JWT_SECRET_KEY: "abcdef1234567890"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  postgres:
+    image: postgres:16.4-alpine3.20
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "postgres"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:

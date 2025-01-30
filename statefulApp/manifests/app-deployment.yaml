@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-k8s-stateful
+  labels:
+    app: hello-k8s-stateful
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-k8s-stateful
+  template:
+    metadata:
+      name: hello-k8s-stateful
+      labels:
+        app: hello-k8s-stateful
+    spec:
+      containers:
+        - name: hello-k8s-stateful-api
+          image: ghcr.io/yaon-c2h8n2/hello-k8s-stateful-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: nodename
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "postgres"
+            - name: POSTGRES_URL
+              value: "postgres"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              value: "postgres"
+            - name: JWT_SECRET_KEY
+              value: "abcdef1234567890"
+        - name: hello-k8s-stateful-client
+          image: ghcr.io/yaon-c2h8n2/hello-k8s-stateful-client:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchLabels:
+                  app: hello-k8s-stateful
+      

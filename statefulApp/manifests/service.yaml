@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-k8s-stateful
+spec:
+  selector:
+    app: hello-k8s-stateful
+    tier: frontend
+  ports:
+    - name: front
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: api
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-k8s-stateful-postgres
+spec:
+  selector:
+    app: hello-k8s-stateful
+    tier: database
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: NodePort # Here the database service is exposed as a NodePort service for testing purposes
