@@ -88,23 +88,7 @@ kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/
 
 One the networking plugin is installed, we can install the Nginx ingress controller :
 ```bash
-# Clone the nginx ingress controller repository
-git clone https://github.com/nginx/kubernetes-ingress.git --branch <version_number>
-cd kubernetes-ingress
-
-# Deploy the ingress controller resources
-kubectl apply -f deployments/common/ns-and-sa.yaml
-kubectl apply -f deployments/rbac/rbac.yaml
-kubectl apply -f examples/shared-examples/default-server-secret/default-server-secret.yaml
-kubectl apply -f deployments/common/nginx-config.yaml
-kubectl apply -f deployments/common/ingress-class.yaml
-kubectl apply -f https://raw.githubusercontent.com/nginx/kubernetes-ingress/v4.0.0/deploy/crds.yaml
-
-# Deploy the ingress controller as a daemonset to ensure that it runs on all nodes
-kubectl apply -f deployments/daemon-set/nginx-ingress.yaml
-
-# Deploy the nginx ingress service as a nodeport service
-kubectl create -f deployments/service/nodeport.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.0/deploy/static/provider/baremetal/deploy.yaml
 ```
 
 After the ingress controller is installed, we can run the following command to get the nodeport of the ingress service:
@@ -113,8 +97,9 @@ After the ingress controller is installed, we can run the following command to g
 kubectl get services -n nginx-ingress -o wide
 
 # Output
-NAME            TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE   SELECTOR
-nginx-ingress   NodePort   10.108.16.81   <none>        80:31241/TCP,443:30631/TCP   22h   app=nginx-ingress
+NAME                                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx-controller             NodePort    10.107.116.103   <none>        80:30736/TCP,443:32186/TCP   12m
+ingress-nginx-controller-admission   ClusterIP   10.110.149.189   <none>        443/TCP                      12m
 ```
 
 The ingress service is exposed on port 31241 for HTTP and 30631 for HTTPS and can be accessed from any of the nodes in the cluster.
