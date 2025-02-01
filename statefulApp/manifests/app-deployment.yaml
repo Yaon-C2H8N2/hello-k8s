@@ -14,6 +14,7 @@ spec:
       name: hello-k8s-stateful
       labels:
         app: hello-k8s-stateful
+        tier: frontend
     spec:
       containers:
         - name: hello-k8s-stateful-api
@@ -32,7 +33,7 @@ spec:
             - name: POSTGRES_PASSWORD
               value: "postgres"
             - name: POSTGRES_URL
-              value: "postgres"
+              value: "hello-k8s-stateful-postgres"
             - name: POSTGRES_PORT
               value: "5432"
             - name: POSTGRES_DB
@@ -53,4 +54,5 @@ spec:
               labelSelector:
                 matchLabels:
                   app: hello-k8s-stateful
+                  tier: frontend
       

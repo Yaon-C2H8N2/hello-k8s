@@ -38,5 +38,6 @@ spec:
         - name: hello-k8s-stateful-postgres
           persistentVolumeClaim:
             claimName: hello-k8s-stateful-postgres
+
       restartPolicy: Always
       

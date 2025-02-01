@@ -4,6 +4,7 @@ metadata:
   name: hello-k8s-stateful-postgres
   labels:
     app: hello-k8s-stateful
+    tier: postgres
 spec:
   accessModes:
     - ReadWriteOnce
