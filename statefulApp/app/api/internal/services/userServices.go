@@ -76,7 +76,7 @@ func Authenticate(c *gin.Context) {
 }
 
 func Register(c *gin.Context) {
-	authRequestBytes, err := io.ReadAll(c.Request.Body)
+	registerRequestBytes, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error":   "Failed to read request body",
@@ -85,8 +85,8 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	var authRequest = &requests.AuthRequest{}
-	err = json.Unmarshal(authRequestBytes, authRequest)
+	var registerRequest = &requests.RegisterRequest{}
+	err = json.Unmarshal(registerRequestBytes, registerRequest)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error":   "Failed to unmarshal request body",
@@ -101,10 +101,10 @@ func Register(c *gin.Context) {
 	sql := `
 		INSERT INTO users (first_name, last_name, age, login, password)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id;
+		RETURNING id, first_name, last_name, age;
 	`
 
-	rows := utils.DoRequest(conn, sql, authRequest.Username, authRequest.Password)
+	rows := utils.DoRequest(conn, sql, registerRequest.FirstName, registerRequest.LastName, registerRequest.Age, registerRequest.Username, registerRequest.Password)
 	if rows.Next() {
 		var user = &models.User{}
 		err = rows.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Age)

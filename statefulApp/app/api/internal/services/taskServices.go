@@ -24,7 +24,7 @@ func GetTaskForUser(c *gin.Context) {
 	`
 
 	rows := utils.DoRequest(conn, sql, user.ID)
-	var tasks []models.Task
+	tasks := make([]models.Task, 0)
 	for rows.Next() {
 		var task = models.Task{}
 		err = rows.Scan(&task.ID, &task.Name, &task.Description, &task.DueDate)
