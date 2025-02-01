@@ -102,7 +102,7 @@ ingress-nginx-controller             NodePort    10.107.116.103   <none>        
 ingress-nginx-controller-admission   ClusterIP   10.110.149.189   <none>        443/TCP                      12m
 ```
 
-The ingress service is exposed on port 31241 for HTTP and 30631 for HTTPS and can be accessed from any of the nodes in the cluster.
+The ingress service is exposed on port 30736 for HTTP and 32186 for HTTPS and can be accessed from any of the nodes in the cluster.
 
 The cluster is now set up and ready to deploy applications.
 
