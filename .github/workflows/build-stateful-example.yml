@@ -1,0 +1,98 @@
+name: build-stateless-example.yml
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  api-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the stateful app API
+        uses: docker/build-push-action@v6
+        with:
+          context: statefulApp/app/api
+          file: statelessApp/app/api/Dockerfile
+          push: false
+          tags: ghcr.io/yaon-c2h8n2/hello-k8s-stateful-api:latest
+
+      - name: Saving the stateful app API image
+        run: docker save ghcr.io/yaon-c2h8n2/hello-k8s-stateful-api:latest > statefulApp/app/api/hello-k8s-stateful-api.tar
+
+      - name: API artifact upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-k8s-stateful-api
+          path: statefulApp/app/api/hello-k8s-stateful-api.tar
+
+  client-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the stateful app client
+        uses: docker/build-push-action@v6
+        with:
+          context: statefulApp/app/client
+          file: statelessApp/app/client/Dockerfile
+          push: false
+          tags: ghcr.io/yaon-c2h8n2/hello-k8s-stateful-client:latest
+
+      - name: Saving the stateful app client image
+        run: docker save ghcr.io/yaon-c2h8n2/hello-k8s-stateful-client:latest > statefulApp/app/client/hello-k8s-stateful-client.tar
+
+      - name: Client artifact upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-k8s-stateful-client
+          path: statefulApp/app/client/hello-k8s-stateful-client.tar
+
+  push:
+    runs-on: ubuntu-latest
+    needs: [ api-build, client-build ]
+
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Client artifact download
+        uses: actions/download-artifact@v4
+        with:
+          name: hello-k8s-stateful-client
+          path: .
+
+      - name: API artifact download
+        uses: actions/download-artifact@v4
+        with:
+          name: hello-k8s-stateful-api
+          path: .
+
+      - name: Loading the images
+        run: docker load < hello-k8s-stateful-api.tar && docker load < hello-k8s-stateful-client.tar
+
+      - name: Push the images
+        run: docker push ghcr.io/yaon-c2h8n2/hello-k8s-stateful-api:latest && docker push ghcr.io/yaon-c2h8n2/hello-k8s-stateful-client:latest
