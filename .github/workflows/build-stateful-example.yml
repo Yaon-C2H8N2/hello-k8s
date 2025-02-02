@@ -1,4 +1,4 @@
-name: build-stateless-example.yml
+name: build-stateful-example.yml
 on:
   push:
     branches:
@@ -23,7 +23,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: statefulApp/app/api
-          file: statelessApp/app/api/Dockerfile
+          file: statefulApp/app/api/Dockerfile
           push: false
           tags: ghcr.io/yaon-c2h8n2/hello-k8s-stateful-api:latest
 
@@ -54,7 +54,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: statefulApp/app/client
-          file: statelessApp/app/client/Dockerfile
+          file: statefulApp/app/client/Dockerfile
           push: false
           tags: ghcr.io/yaon-c2h8n2/hello-k8s-stateful-client:latest
 
